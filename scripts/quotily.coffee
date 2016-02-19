@@ -46,6 +46,13 @@ module.exports = (robot) ->
     # note that this variable is *GLOBAL TO ALL SCRIPTS* so choose a unique name
     robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
 
+  robot.hear /\bup\b/, (msg) ->
+    # note that this variable is *GLOBAL TO ALL SCRIPTS* so choose a unique name
+    robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
+  robot.hear /give me a quote/i, (msg) ->
+     msg.send "@" + get_username(msg).slice(1) + ":" + msg.random ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
+
+  
   # ? is a special character in regex so it needs to be escaped with a \
   # the i on the end means "case *insensitive*"
   robot.hear /are we up\?/i, (msg) ->
