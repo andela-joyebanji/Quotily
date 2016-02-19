@@ -1,1 +1,5 @@
 xoxb-22181588480-SuSGWJKgRNs3KyfUiAcaEOhP
+
+HUBOT_SLACK_TOKEN=xoxb-22254185282-tWClEYV9hfCEepqJFR8pOlDe ./bin/hubot --adapter slack
+heroku config:add HUBOT_SLACK_TOKEN=xoxb-22181588480-SuSGWJKgRNs3KyfUiAcaEOhP
+heroku config:add HEROKU_URL=https://andela-slackbot.herokuapp.com
