@@ -8,9 +8,9 @@
 #
 #   These are from the scripting documentation: https://github.com/github/hubot/blob/master/docs/scripting.md
 
-module.exports = (robot) ->
-      robot.hear /test/i, (res) ->
-        res.send "Testing ooo Testing"
+   module.exports = (robot) ->
+  #     robot.hear /test/i, (res) ->
+  #        res.send "Testing ooo Testing"
   #
   # robot.respond /open the (.*) doors/i, (res) ->
   #   doorType = res.match[1]
