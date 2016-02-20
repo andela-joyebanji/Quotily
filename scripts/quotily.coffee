@@ -110,14 +110,13 @@ module.exports = (robot) ->
       room: get_username(msg).slice(1),
       source: 'use of the bug me command'
     }
-  robot.respond /bug (.) with a quote/i, (res) ->
+  robot.respond /bug (.*) with a quote/i, (res) ->
     usernameToBug = res.match[1]
-    res.send usernameToBug + " to bug"
     try
       # this will do a private message if the "data.room" variable is the user id of a person
       robot.messageRoom usernameToBug.slice(1), res.random quotes
     catch error
-    #res.send "@" + get_username(res).slice(1) + ":" + usernameToBug.slice(1) + " has been bugged with a quote"
+    res.reply "@" + get_username(res).slice(1) + ":" + usernameToBug.slice(1) + " has been bugged with a quote"
 
   ###
   # A generic custom event listener
