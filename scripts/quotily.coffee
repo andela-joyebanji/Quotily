@@ -11,6 +11,7 @@
 # Author:
 #   Michi Kono
 #
+quotes = ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
 
 module.exports = (robot) ->
   # helper method to get sender of the message
@@ -113,7 +114,7 @@ module.exports = (robot) ->
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom usernameToBug.slice(1), get_random_quote(res)
+      robot.messageRoom usernameToBug.slice(1), res.random quotes
     catch error
     msg.send "@" + get_username(msg).slice(1) + ":" + usernameToBug.slice(1) + " has been bugged with a quote"
 
