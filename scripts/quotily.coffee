@@ -112,7 +112,7 @@ module.exports = (robot) ->
     }
   robot.respond /bug (.) with a quote/i, (res) ->
     usernameToBug = res.match[1]
-    res.send usernameToBug + " to bug";
+    res.send usernameToBug + " to bug"
     try
       # this will do a private message if the "data.room" variable is the user id of a person
       robot.messageRoom usernameToBug.slice(1), res.random quotes
