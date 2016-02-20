@@ -76,7 +76,7 @@ module.exports = (robot) ->
     else
       msg.send 'No messages have been scheduled'
 
-  robot.hear /schedule (?:del|delete|remove|cancel) (\d+)/i, (msg) ->
+  robot.hear /schedule (del|delete|remove|cancel) (\d+)/i, (msg) ->
     cancelSchedule robot, msg, msg.match[1]
 
   robot.hear /give me a quote/i, (msg) ->
@@ -142,6 +142,11 @@ module.exports = (robot) ->
     res.reply usernameToBug.slice(1) + " has been bugged with a quote"
 
   robot.respond /display a qoute on this channel every (.*) minutes/i, (res) ->
+    min = res.match[1]
+    pattern = "*/#{min} * * * *"
+    schedule robot, res, pattern , res.random quotes
+
+  robot.hear /display a qoute on this channel every (.*) minutes/i, (res) ->
     min = res.match[1]
     pattern = "*/#{min} * * * *"
     schedule robot, res, pattern , res.random quotes
