@@ -13,7 +13,20 @@
 #
 quotes = ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
 
+scheduler = require('node-schedule')
+cronParser = require('cron-parser')
+{TextMessage} = require('hubot')
+JOBS = {}
+JOB_MAX_COUNT = 10000
+STORE_KEY = 'quotily_schedule'
+
 module.exports = (robot) ->
+  robot.brain.on 'loaded', =>
+    syncSchedules robot
+
+  if !robot.brain.get(STORE_KEY)
+    robot.brain.set(STORE_KEY, {})
+
   # helper method to get sender of the message
   get_username = (response) ->
     "@#{response.message.user.name}"
@@ -51,14 +64,24 @@ module.exports = (robot) ->
     # note that this variable is *GLOBAL TO ALL SCRIPTS* so choose a unique name
     robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
 
-  robot.hear /\bup\b/, (msg) ->
-    # note that this variable is *GLOBAL TO ALL SCRIPTS* so choose a unique name
-    robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
+  robot.hear /schedule list/i, (msg) ->
+    text = ''
+    for id, job of JOBS
+      room = job.user.room || job.user.reply_to
+      if room in [msg.message.user.room, msg.message.user.reply_to]
+        text += "#{id}: [ #{job.pattern} ] \##{room} #{job.message} \n"
+    if !!text.length
+      #text = text.replace(///#{org_text}///g, replaced_text) for org_text, replaced_text of config.list.   #replace_text
+      msg.send text
+    else
+      msg.send 'No messages have been scheduled'
+
+  robot.hear /schedule (?:del|delete|remove|cancel) (\d+)/i, (msg) ->
+    cancelSchedule robot, msg, msg.match[1]
 
   robot.hear /give me a quote/i, (msg) ->
      msg.send "@" + get_username(msg).slice(1) + ":" + msg.random ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
 
-  
   # ? is a special character in regex so it needs to be escaped with a \
   # the i on the end means "case *insensitive*"
   robot.hear /are we up\?/i, (msg) ->
@@ -81,7 +104,7 @@ module.exports = (robot) ->
   robot.hear /.*!.*/, (msg) ->
     # send back the same message
     # reply prefixes the user's name in front of the text
-    msg.reply msg.match[0]
+    msg.send msg.match[0]
 
   ###
   # Example of building an external endpoint (that lives on your heroku app) for others things to trigger your bot to do stuff
@@ -118,6 +141,11 @@ module.exports = (robot) ->
     catch error
     res.reply usernameToBug.slice(1) + " has been bugged with a quote"
 
+  robot.respond /display a qoute on this channel every (.*) minutes/i, (res) ->
+    min = res.match[1]
+    pattern = "*/#{min} * * * *"
+    schedule robot, res, pattern , res.random quotes
+    
   ###
   # A generic custom event listener
   # Also demonstrating how to send private messages and messages to specific channels
@@ -142,3 +170,144 @@ module.exports = (robot) ->
   # uncomment to test this
   # robot.catchAll (response) ->
   #   console.log('catch all: ', response)
+
+
+
+
+
+#Scheduling 
+schedule = (robot, msg, pattern, message) ->
+  if JOB_MAX_COUNT <= Object.keys(JOBS).length
+    return msg.send "Too many scheduled messages"
+
+  id = Math.floor(Math.random() * JOB_MAX_COUNT) while !id? || JOBS[id]
+  try
+    job = createSchedule robot, id, pattern, msg.message.user, message
+    if job
+      msg.send "#{id}: Schedule created"
+    else
+      msg.send """
+        \"#{pattern}\" is invalid pattern.
+        See http://crontab.org/ for cron-style format pattern.
+        See http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15 for datetime-based format pattern.
+      """
+  catch error
+    return msg.send error.message
+
+
+createSchedule = (robot, id, pattern, user, message) ->
+  if isCronPattern(pattern)
+    return createCronSchedule robot, id, pattern, user, message
+  
+  date = Date.parse(pattern)
+  if !isNaN(date)
+    if date < Date.now()
+      throw new Error "\"#{pattern}\" has already passed"
+    return createDatetimeSchedule robot, id, pattern, user, message
+
+
+createCronSchedule = (robot, id, pattern, user, message) ->
+  startSchedule robot, id, pattern, user, message
+
+
+createDatetimeSchedule = (robot, id, pattern, user, message) ->
+  startSchedule robot, id, new Date(pattern), user, message, () ->
+    delete JOBS[id]
+    delete robot.brain.get(STORE_KEY)[id]
+
+
+startSchedule = (robot, id, pattern, user, message, cb) ->
+  job = new Job(id, pattern, user, message, cb)
+  job.start(robot)
+  JOBS[id] = job
+  robot.brain.get(STORE_KEY)[id] = job.serialize()
+
+
+updateSchedule = (robot, msg, id, message) ->
+  job = JOBS[id]
+  return msg.send "Schedule #{id} not found" if !job
+
+  job.message = message
+  robot.brain.get(STORE_KEY)[id] = job.serialize()
+  msg.send "#{id}: Scheduled message updated"
+
+
+cancelSchedule = (robot, msg, id) ->
+  job = JOBS[id]
+  return msg.send "#{id}: Schedule not found" if !job
+
+  job.cancel()
+  delete JOBS[id]
+  delete robot.brain.get(STORE_KEY)[id]
+  msg.send "#{id}: Schedule canceled"
+
+
+syncSchedules = (robot) ->
+  if !robot.brain.get(STORE_KEY)
+    robot.brain.set(STORE_KEY, {})
+
+  nonCachedSchedules = difference(robot.brain.get(STORE_KEY), JOBS)
+  for own id, job of nonCachedSchedules
+    scheduleFromBrain robot, id, job...
+
+  nonStoredSchedules = difference(JOBS, robot.brain.get(STORE_KEY))
+  for own id, job of nonStoredSchedules
+    storeScheduleInBrain robot, id, job
+
+
+scheduleFromBrain = (robot, id, pattern, user, message) ->
+  envelope = user: user, room: user.room
+  try
+    createSchedule robot, id, pattern, user, message
+  catch error
+    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" if config.debug is '1'
+    return delete robot.brain.get(STORE_KEY)[id]
+
+  robot.send envelope, "#{id} scheduled from brain" if config.debug is '1'
+
+
+storeScheduleInBrain = (robot, id, job) ->
+  robot.brain.get(STORE_KEY)[id] = job.serialize()
+
+  envelope = user: job.user, room: job.user.room
+  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" if config.debug is '1'
+
+
+difference = (obj1 = {}, obj2 = {}) ->
+  diff = {}
+  for id, job of obj1
+    diff[id] = job if id !of obj2
+  return diff
+
+
+isCronPattern = (pattern) ->
+  errors = cronParser.parseString(pattern).errors
+  return !Object.keys(errors).length
+
+
+class Job
+  constructor: (id, pattern, user, message, cb) ->
+    @id = id
+    @pattern = pattern
+    # cloning user because adapter may touch it later
+    @user = {}
+    @user[k] = v for k,v of user
+    @message = message
+    @cb = cb
+    @job
+
+  start: (robot) ->
+    @job = scheduler.scheduleJob(@pattern, =>
+      envelope = user: @user, room: @user.room
+      robot.send envelope, @message
+      robot.adapter.receive new TextMessage(@user, @message) 
+      @cb?()
+    )
+
+  cancel: ->
+    scheduler.cancelJob @job if @job
+    @cb?()
+    
+  serialize: ->
+    [@pattern, @user, @message]
+
