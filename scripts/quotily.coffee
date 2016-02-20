@@ -17,6 +17,10 @@ module.exports = (robot) ->
   get_username = (response) ->
     "@#{response.message.user.name}"
 
+  # helper method to get sender of the message
+  get_random_quote = (msg) ->
+    msg.random ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
+
   # helper method to get channel of originating message
   get_channel = (response) ->
     if response.message.room == response.message.user.name
@@ -49,6 +53,7 @@ module.exports = (robot) ->
   robot.hear /\bup\b/, (msg) ->
     # note that this variable is *GLOBAL TO ALL SCRIPTS* so choose a unique name
     robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
+
   robot.hear /give me a quote/i, (msg) ->
      msg.send "@" + get_username(msg).slice(1) + ":" + msg.random ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
 
@@ -104,6 +109,13 @@ module.exports = (robot) ->
       room: get_username(msg).slice(1),
       source: 'use of the bug me command'
     }
+  robot.respond /bug (.) with a quote/i, (res) ->
+    usernameToBug = res.match[1]
+    try
+      # this will do a private message if the "data.room" variable is the user id of a person
+      robot.messageRoom usernameToBug.slice(1), get_random_quote(res)
+    catch error
+    msg.send "@" + get_username(msg).slice(1) + ":" + usernameToBug.slice(1) + " has been bugged with a quote"
 
   ###
   # A generic custom event listener
