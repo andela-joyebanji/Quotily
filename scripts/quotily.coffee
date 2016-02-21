@@ -58,8 +58,8 @@ module.exports = (robot) ->
     # responds in the current channel
     msg.send """
     Commands:
-    	quotily help - Displays help message
-		quotily sleep it off - Schedule a message that runs on a specific date and time
+    `quotily help - Displays help message
+		quotily sleep it off - 'Zzz' 
 		quotily schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 		quotily schedule list - List all scheduled quote messaging
 		quotily give me a quote - Reply with a random quote
@@ -70,7 +70,7 @@ module.exports = (robot) ->
 		quotily display a qoute on this channel every <hour> (hour|hours) - Sends a random quote every <hour> on the current channel
 		quotily every <hour> (hour|hours) - shoutcut for above ^^^
 		quotily every working days at <hour>:<minute> - Sends a random quote every Monday through Friday at <hour>:<minute> (24 hour format eg 20:00 is 8pm)
-		quotily every non-working days at <hour>:<minute> - Sends a random quote every Saturday and Sunday at <hour>:<minute> (24 hour format eg 20:00 is 8pm)
+		quotily every non-working days at <hour>:<minute> - Sends a random quote every Saturday and Sunday at <hour>:<minute> (24 hour format eg 20:00 is 8pm)`
     """
 
   robot.respond /schedule list/i, (msg) ->
