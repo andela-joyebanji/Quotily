@@ -176,12 +176,6 @@ quotilybot help - Displays help message
   	  hrs = 0
     if res.match[3] == "pm"
       hrs += 12
-    #return res.send hrs
-  	dateO = new Date()
-  	dateO.setHours(hrs)
-  	dateO.setHours(dateO.getHours() - BOT_TZ_DIFF)
-  	#return res.send dateO.getHours()
-  	hrs = dateO.getHours()
   	pattern = "#{min} #{hrs} * * 1-5"
   	schedule robot, res, pattern , ""
 
@@ -192,12 +186,6 @@ quotilybot help - Displays help message
   	  hrs = 0
     if res.match[3] == "pm"
       hrs += 12
-    #return res.send hrs
-  	dateO = new Date()
-  	dateO.setHours(hrs)
-  	dateO.setHours(dateO.getHours() - BOT_TZ_DIFF)
-  	#return res.send dateO.getHours()
-  	hrs = dateO.getHours()
   	pattern = "#{min} #{hrs} * * 0,6"
   	schedule robot, res, pattern , ""
 
