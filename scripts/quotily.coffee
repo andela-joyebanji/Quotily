@@ -21,7 +21,7 @@ cronParser = require('cron-parser')
 {TextMessage} = require('hubot')
 JOBS = {}
 JOB_MAX_COUNT = 10000
-BOT_TZ_DIFF = -9
+BOT_TZ_DIFF = 9
 STORE_KEY = 'quotily_schedule'
 
 module.exports = (robot) ->
@@ -169,16 +169,37 @@ quotilybot help - Displays help message
     pattern = "* */#{hrs} * * *"
     schedule robot, res, pattern , ""
   
-  robot.respond /every working days at (\d+):(\d+)/i, (res) ->
-    hrs = (res.match[1] % 12) + BOT_TZ_DIFF
-    min = res.match[2] % 60
-    pattern = "#{min} #{hrs} * * 1-5"
-    schedule robot, res, pattern , ""
-  robot.respond /every non-working days at (\d+):(\d+)/i, (res) ->
-    hrs = (res.match[1] % 12) + BOT_TZ_DIFF
-    min = res.match[2] % 60
-    pattern = "#{min} #{hrs} * * 0,6"
-    schedule robot, res, pattern , ""
+  robot.respond /every working days at (1[012]|[1-9]):([0-5][0-9])(am|pm)/i, (res) ->
+  	hrs = new Number(res.match[1])
+  	min = res.match[2]
+  	if res.match[3] == "am" && hrs == 12
+  	  hrs = 0
+    if res.match[3] == "pm"
+      hrs += 12
+    #return res.send hrs
+  	dateO = new Date()
+  	dateO.setHours(hrs)
+  	dateO.setHours(dateO.getHours() - BOT_TZ_DIFF)
+  	#return res.send dateO.getHours()
+  	hrs = dateO.getHours()
+  	pattern = "#{min} #{hrs} * * 1-5"
+  	schedule robot, res, pattern , ""
+
+  robot.respond /every non-working days at (1[012]|[1-9]):([0-5][0-9])(am|pm)/i, (res) ->
+  	hrs = new Number(res.match[1])
+  	min = res.match[2]
+  	if res.match[3] == "am" && hrs == 12
+  	  hrs = 0
+    if res.match[3] == "pm"
+      hrs += 12
+    #return res.send hrs
+  	dateO = new Date()
+  	dateO.setHours(hrs)
+  	dateO.setHours(dateO.getHours() - BOT_TZ_DIFF)
+  	#return res.send dateO.getHours()
+  	hrs = dateO.getHours()
+  	pattern = "#{min} #{hrs} * * 0,6"
+  	schedule robot, res, pattern , ""
 
   ###
   # A generic custom event listener
@@ -190,8 +211,6 @@ quotilybot help - Displays help message
       # this will do a private message if the "data.room" variable is the user id of a person
       robot.messageRoom data.room, 'This is a custom message due to ' + data.source
     catch error
-
-
 
 
   ###
@@ -236,7 +255,6 @@ quotilybot help - Displays help message
 
 
 
-
 #Scheduling Refenrence: https://github.com/matsukaz/hubot-schedule
 schedule = (robot, msg, pattern, message) ->
   if JOB_MAX_COUNT <= Object.keys(JOBS).length
@@ -248,8 +266,7 @@ schedule = (robot, msg, pattern, message) ->
     if job
       msg.send "#{id}: Schedule created"
     else
-      msg.send """ Invalid Schedule Values
-      """
+      msg.send """Invalid Schedule Values (Note: We use 24 hours Format)"""
   catch error
     return msg.send error.message
 
