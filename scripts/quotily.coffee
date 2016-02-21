@@ -24,7 +24,7 @@ module.exports = (robot) ->
   robot.brain.on 'loaded', =>
     syncSchedules robot
 
-  if !robot.brain.get(STORE_KEY)
+  if robot.brain.get(STORE_KEY)
     robot.brain.set(STORE_KEY, {})
 
   # helper method to get sender of the message
@@ -64,7 +64,7 @@ module.exports = (robot) ->
     # note that this variable is *GLOBAL TO ALL SCRIPTS* so choose a unique name
     robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
 
-  robot.hear /schedule list/i, (msg) ->
+  robot.respond /schedule list/i, (msg) ->
     text = ''
     for id, job of JOBS
       room = job.user.room || job.user.reply_to
@@ -76,7 +76,7 @@ module.exports = (robot) ->
     else
       msg.send 'No messages have been scheduled'
 
-  robot.hear /schedule (del|delete|remove|cancel) (\d+)/i, (msg) ->
+  robot.respond /schedule (?:del|delete|remove|cancel) (\d+)/i, (msg) ->
     cancelSchedule robot, msg, msg.match[1]
 
   robot.hear /give me a quote/i, (msg) ->
