@@ -9,7 +9,7 @@ cronParser = require('cron-parser')
 {TextMessage} = require('hubot')
 JOBS = {}
 JOB_MAX_COUNT = 10000
-BOT_TZ_DIFF = 9
+BOT_TZ_DIFF = -9
 STORE_KEY = 'quotily_schedule'
 
 module.exports = (robot) ->
@@ -164,6 +164,10 @@ quotilybot help - Displays help message
   	  hrs = 0
     if res.match[3] == "pm"
       hrs += 12
+    if (hrs + BOT_TZ_DIFF) < 0
+      hrs = 24 + (hrs + BOT_TZ_DIFF)
+    else
+      hrs += BOT_TZ_DIFF
   	pattern = "#{min} #{hrs} * * 1-5"
   	schedule robot, res, pattern , ""
 
@@ -174,6 +178,10 @@ quotilybot help - Displays help message
   	  hrs = 0
     if res.match[3] == "pm"
       hrs += 12
+    if (hrs + BOT_TZ_DIFF) < 0
+      hrs = 24 + (hrs + BOT_TZ_DIFF)
+    else
+      hrs += BOT_TZ_DIFF
   	pattern = "#{min} #{hrs} * * 0,6"
   	schedule robot, res, pattern , ""
 
