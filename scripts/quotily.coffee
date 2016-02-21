@@ -58,31 +58,31 @@ module.exports = (robot) ->
     # responds in the current channel
     msg.send """
     Commands:
-quotily help - Displays help message
+quotilybot help - Displays help message
 
-		quotily sleep it off - 'Zzz' 
+		quotilybot sleep it off - 'Zzz' 
 
-		quotily schedule [cancel|del|delete|remove] <id> - Cancel the schedule
+		quotilybot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 
-		quotily schedule list - List all scheduled quote messaging
+		quotilybot schedule list - List all scheduled quote messaging
 
-		quotily give me a quote - Reply with a random quote
+		quotilybot give me a quote - Reply with a random quote
 
-		quotily bug me - Reply with a DM of a random quote 
+		quotilybot bug me - Reply with a DM of a random quote 
 
-		quotily bug <handle> with a quote - Sends a random quote to the <handle>
+		quotilybot bug <handle> with a quote - Sends a random quote to the <handle>
 
-		quotily display a qoute on this channel every <minute> (minute|minutes) - Sends a random quote                           every <minute> on the current channel
+		quotilybot display a qoute on this channel every <minute> (minute|minutes) - Sends a random quote                           every <minute> on the current channel
 
-		quotily every <minute> (minute|minutes) - shoutcut for above ^^^
+		quotilybot every <minute> (minute|minutes) - shoutcut for above ^^^
 
-		quotily display a qoute on this channel every <hour> (hour|hours) - Sends a random quote every                            <hour> on the current channel
+		quotilybot display a qoute on this channel every <hour> (hour|hours) - Sends a random quote every                             <hour> on the current channel
 
-		quotily every <hour> (hour|hours) - shoutcut for above ^^^
+		quotilybot every <hour> (hour|hours) - shoutcut for above ^^^
 
-		quotily every working days at <hour>:<minute> - Sends a random quote every Monday through Friday at                               <hour>:<minute> (24 hour format eg 20:00 is 8pm)
+		quotilybot every working days at <hour>:<minute> - Sends a random quote every Monday through                                    Friday at <hour>:<minute> (24 hour format eg 20:00 is 8pm)
 		
-		quotily every non-working days at <hour>:<minute> - Sends a random quote every Saturday and Sunday                            at <hour>:<minute> (24 hour format eg 20:00 is 8pm)
+		quotilybot every non-working days at <hour>:<minute> - Sends a random quote every Saturday and Sunday                            at <hour>:<minute> (24 hour format eg 20:00 is 8pm)
     """
 
   robot.respond /schedule list/i, (msg) ->
@@ -173,7 +173,7 @@ quotily help - Displays help message
     min = res.match[2] % 60
     pattern = "#{min} */#{hrs} * * 1-5"
     schedule robot, res, pattern , ""
-  robot.respond /every non-working days at (\d):(\d+)/i, (res) ->
+  robot.respond /every non-working days at (\d+):(\d+)/i, (res) ->
     hrs = res.match[1] % 12
     min = res.match[2] % 60
     pattern = "#{min} */#{hrs} * * 0,6"
