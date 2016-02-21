@@ -172,12 +172,12 @@ quotilybot help - Displays help message
   robot.respond /every working days at (\d+):(\d+)/i, (res) ->
     hrs = (res.match[1] % 12) + BOT_TZ_DIFF
     min = res.match[2] % 60
-    pattern = "#{min} */#{hrs} * * 1-5"
+    pattern = "#{min} #{hrs} * * 1-5"
     schedule robot, res, pattern , ""
   robot.respond /every non-working days at (\d+):(\d+)/i, (res) ->
     hrs = (res.match[1] % 12) + BOT_TZ_DIFF
     min = res.match[2] % 60
-    pattern = "#{min} */#{hrs} * * 0,6"
+    pattern = "#{min} #{hrs} * * 0,6"
     schedule robot, res, pattern , ""
 
   ###
