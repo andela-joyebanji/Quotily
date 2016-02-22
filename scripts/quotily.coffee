@@ -159,7 +159,7 @@ quotilybot help - Displays help message
   
   robot.respond /every working days at (1[012]|[1-9]):([0-5][0-9])(am|pm)/i, (res) ->
   	hrs = new Number(res.match[1])
-  	min = res.match[2]
+  	min = new Number(res.match[2])
   	if res.match[3] == "am" && hrs == 12
   	  hrs = 0
     if res.match[3] == "pm"
@@ -169,7 +169,7 @@ quotilybot help - Displays help message
     else
       hrs += BOT_TZ_DIFF
   	pattern = "#{min} #{hrs} * * 1-5"
-  	schedule robot, res, pattern , ""
+  	schedule robot, res, pattern, ""
 
   robot.respond /every non-working days at (1[012]|[1-9]):([0-5][0-9])(am|pm)/i, (res) ->
   	hrs = new Number(res.match[1])
@@ -183,7 +183,7 @@ quotilybot help - Displays help message
     else
       hrs += BOT_TZ_DIFF
   	pattern = "#{min} #{hrs} * * 0,6"
-  	schedule robot, res, pattern , ""
+  	schedule robot, res, pattern, ""
 
   ###
   # A generic custom event listener
@@ -258,12 +258,12 @@ schedule = (robot, msg, pattern, message) ->
 createSchedule = (robot, id, pattern, user, message) ->
   if isCronPattern(pattern)
     return createCronSchedule robot, id, pattern, user, message
-  
-  date = Date.parse(pattern)
-  if !isNaN(date)
-    if date < Date.now()
-      throw new Error "\"#{pattern}\" has already passed"
-    return createDatetimeSchedule robot, id, pattern, user, message
+  #return createCronSchedule robot, id, pattern, user, message
+  #date = Date.parse(pattern)
+  #if !isNaN(date)
+    #if date < Date.now()
+      #throw new Error "\"#{pattern}\" has already passed"
+  #return createDatetimeSchedule robot, id, pattern, user, message
 
 createCronSchedule = (robot, id, pattern, user, message) ->
   startSchedule robot, id, pattern, user, message
@@ -340,8 +340,10 @@ difference = (obj1 = {}, obj2 = {}) ->
 
 
 isCronPattern = (pattern) ->
-  errors = cronParser.parseString(pattern).errors
-  return !Object.keys(errors).length
+  if (typeof pattern == 'string' || pattern instanceof String)
+    errors = cronParser.parseString(pattern).errors
+    return !Object.keys(errors).length
+  return false
 
 
 class Job
