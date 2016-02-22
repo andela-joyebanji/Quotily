@@ -9,7 +9,7 @@ cronParser = require('cron-parser')
 {TextMessage} = require('hubot')
 JOBS = {}
 JOB_MAX_COUNT = 10000
-BOT_TZ_DIFF = 1
+BOT_TZ_DIFF = -1
 STORE_KEY = 'quotily_schedule'
 
 module.exports = (robot) ->
