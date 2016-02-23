@@ -1,5 +1,32 @@
-
-
+# Description
+#   Quotily, Bot for quotes
+#
+# Dependencies:
+#   "<module name>": "<module version>"
+#
+# Configuration:
+#   LIST_OF_ENV_VARS_TO_SET
+#
+# Commands:
+#       quotilybot help - Displays help message
+#		quotilybot sleep it off - 'Zzz' 
+#		quotilybot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
+#		quotilybot schedule list - List all scheduled quote messaging
+#		quotilybot give me a quote - Reply with a random quote
+#		quotilybot bug me - Reply with a DM of a random quote 
+#		quotilybot bug <handle> with a quote - Sends a random quote to the <handle>
+#		quotilybot display a qoute on this channel every <minute> (minute|minutes) - Sends a random quote every <minute> on the current channel
+#	    quotilybot every <minute> (minute|minutes) - shoutcut for above ^^^
+#		quotilybot display a qoute on this channel every <hour> (hour|hours) - Sends a random quote every <hour> on the current channel
+#       quotilybot every <hour> (hour|hours) - shoutcut for above ^^^
+#		quotilybot every working days at <hour>:<minute>(am|pm) - Sends a random quote every Monday through Friday at <hour>:<minute>(am|pm)
+#		quotilybot every non-working days at <hour>:<minute>(am|pm) - Sends a random quote every Saturday and Sunday at <hour>:<minute>(am|pm)
+#
+# Notes:
+#   <optional notes required for the script>
+#
+# Author:
+#   @pyjac
 
 
 quotes = ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
