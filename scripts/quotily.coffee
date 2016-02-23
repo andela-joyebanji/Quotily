@@ -319,17 +319,17 @@ scheduleFromBrain = (robot, id, pattern, user, message) ->
   try
     createSchedule robot, id, pattern, user, message
   catch error
-    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" if config.debug is '1'
+    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" 
     return delete robot.brain.get(STORE_KEY)[id]
 
-  robot.send envelope, "#{id} scheduled from brain" if config.debug is '1'
+  robot.send envelope, "#{id} scheduled from brain" 
 
 
 storeScheduleInBrain = (robot, id, job) ->
   robot.brain.get(STORE_KEY)[id] = job.serialize()
 
   envelope = user: job.user, room: job.user.room
-  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" if config.debug is '1'
+  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" 
 
 
 difference = (obj1 = {}, obj2 = {}) ->
