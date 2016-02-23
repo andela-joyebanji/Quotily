@@ -160,7 +160,7 @@ quotilybot help - Displays help message
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom usernameToBug.slice(1), get_username(msg) + ":" + res.random quotes
+      robot.messageRoom usernameToBug.slice(1), get_username(msg) + ':' + res.random quotes
     catch error
     res.reply usernameToBug.slice(1) + " has been bugged with a quote"
 
@@ -220,7 +220,7 @@ quotilybot help - Displays help message
   robot.on "bug-me", (data) ->
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom data.room, 'This is a custom message due to ' + data.source
+      robot.messageRoom data.room, res.random quotes
     catch error
 
 
@@ -346,17 +346,17 @@ scheduleFromBrain = (robot, id, pattern, user, message) ->
   try
     createSchedule robot, id, pattern, user, message
   catch error
-    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" 
+    #robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" 
     return delete robot.brain.get(STORE_KEY)[id]
 
-  robot.send envelope, "#{id} scheduled from brain" 
+  #robot.send envelope, "#{id} scheduled from brain" 
 
 
 storeScheduleInBrain = (robot, id, job) ->
   robot.brain.get(STORE_KEY)[id] = job.serialize()
 
   envelope = user: job.user, room: job.user.room
-  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" 
+  #robot.send envelope, "#{id}: Schedule stored in brain asynchronously" 
 
 
 difference = (obj1 = {}, obj2 = {}) ->
