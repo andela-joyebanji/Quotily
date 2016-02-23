@@ -181,13 +181,13 @@ quotilybot help - Displays help message
   # Secondary example of triggering a custom event
   # note that if you direct message this command to the bot, you don't need to prefix it with the name of the bot
   ###
-  robot.respond /bug mee$/i, (msg) ->
+  robot.respond /bug/i, (msg) ->
     robot.emit "bug-me", {
       # removing the @ symbol
       room: get_username(msg).slice(1),
       source: 'use of the bug me command'
     }
-  robot.respond /bug (@.*) with a quote$/i, (res) ->
+  robot.respond /bug (.*) with a quote$/i, (res) ->
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
