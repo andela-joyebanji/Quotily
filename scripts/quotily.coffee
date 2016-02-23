@@ -187,7 +187,7 @@ quotilybot help - Displays help message
       room: get_username(msg).slice(1),
       source: 'use of the bug me command'
     }
-  robot.respond /bug (.*) with a quote$/i, (res) ->
+  robot.respond /bug (@.*) with a quote$/i, (res) ->
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
@@ -195,7 +195,7 @@ quotilybot help - Displays help message
     catch error
     res.reply usernameToBug.slice(1) + " has been bugged with a quote"
 
-  robot.respond /bug (.*)$/i, (res) ->
+  robot.respond /bug (.*)/i, (res) ->
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
