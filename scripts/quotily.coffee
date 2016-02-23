@@ -39,6 +39,14 @@ JOB_MAX_COUNT = 10000
 BOT_TZ_DIFF = -1
 STORE_KEY = 'quotily_schedule'
 
+pg = require('pg');
+connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/todo';
+
+client = new pg.Client(connectionString);
+client.connect();
+query = client.query('CREATE TABLE items(id SERIAL PRIMARY KEY, text VARCHAR(40) not null, complete BOOLEAN)');
+query.on('end', function() { client.end(); });
+
 module.exports = (robot) ->
   robot.brain.on 'loaded', =>
     syncSchedules robot
@@ -52,7 +60,33 @@ module.exports = (robot) ->
 
   # helper method to get sender of the message
   get_random_quote = (msg) ->
-    msg.random ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
+    // Get a Postgres client from the connection pool
+    quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
+    pg.connect(connectionString, (err, client, done) ->
+        // Handle connection errors
+        if err
+            done()
+            quote = err
+            
+
+        // SQL Query > Select Data
+        query = client.query("select * from quotes order by random() limit 1;")
+
+        // Stream results back one row at a time
+        query.on('row', (row) ->
+            quote = "`" + row[0] + "` - " + row[1]
+        )
+
+        // After all data is returned, close connection and return results
+        query.on('end', () ->
+            done()
+            #return res.json(results)
+        )
+    )
+    quote
+    
+
+   
 
   # helper method to get channel of originating message
   get_channel = (response) ->
