@@ -77,8 +77,6 @@ module.exports = (robot) ->
             #return res.json(results)
         )
     )
-    
-
    
 
   # helper method to get channel of originating message
@@ -180,7 +178,7 @@ quotilybot help - Displays help message
   # note that if you direct message this command to the bot, you don't need to prefix it with the name of the bot
   ###
   robot.respond /bugz/i, (msg) ->
-  	console.log("In Bugz method")
+    console.log("In Bugz method")
     robot.emit "bug-me", {
       # removing the @ symbol
       room: get_username(msg).slice(1),
