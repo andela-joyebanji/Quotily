@@ -160,7 +160,7 @@ quotilybot help - Displays help message
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom usernameToBug.slice(1), get_username(msg) + ':' + res.random quotes
+      robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + res.random quotes
     catch error
     res.reply usernameToBug.slice(1) + " has been bugged with a quote"
 
