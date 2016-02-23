@@ -66,7 +66,7 @@ module.exports = (robot) ->
              
         query = client.query("select * from quotes order by random() limit 1;")
         query.on('row', (row) ->
-            quote = "`" + row[0] + "` - " + row[1]
+            quote = "`" + row.quote + "` - " + row.author
             console.log(" get_random_quote HERE " + quote + row)
             callback(quote)
         )
