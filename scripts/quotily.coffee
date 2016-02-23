@@ -55,24 +55,24 @@ module.exports = (robot) ->
 
   # helper method to get sender of the message
   get_random_quote = (msg) ->
-    // Get a Postgres client from the connection pool
+    #Get a Postgres client from the connection pool
     quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
     pg.connect(connectionString, (err, client, done) ->
-        // Handle connection errors
+        # Handle connection errors
         if err
             done()
             quote = err
             
 
-        // SQL Query > Select Data
+        
         query = client.query("select * from quotes order by random() limit 1;")
 
-        // Stream results back one row at a time
+        
         query.on('row', (row) ->
             quote = "`" + row[0] + "` - " + row[1]
         )
 
-        // After all data is returned, close connection and return results
+        # After all data is returned, close connection and return results
         query.on('end', () ->
             done()
             #return res.json(results)
