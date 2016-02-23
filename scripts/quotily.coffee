@@ -54,7 +54,7 @@ module.exports = (robot) ->
     "@#{response.message.user.name}"
 
   # helper method to get sender of the message
-  get_random_quote = (msg) ->
+  get_random_quote = (callback) ->
     #Get a Postgres client from the connection pool
     quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
     pg.connect(connectionString, (err, client, done) ->
@@ -70,6 +70,7 @@ module.exports = (robot) ->
         
         query.on('row', (row) ->
             quote = "`" + row[0] + "` - " + row[1]
+            callback(quote)
         )
 
         # After all data is returned, close connection and return results
@@ -78,7 +79,6 @@ module.exports = (robot) ->
             #return res.json(results)
         )
     )
-    quote
     
 
    
@@ -116,6 +116,8 @@ quotilybot help - Displays help message
 		quotilybot bug me - Reply with a DM of a random quote 
 
 		quotilybot bug <handle> with a quote - Sends a random quote to the <handle>
+
+		quotilybot bug <handle> - Sends a random quote to the <handle>
 
 		quotilybot display a qoute on this channel every <minute> (minute|minutes) - Sends a random quote                           every <minute> on the current channel
 
@@ -193,6 +195,14 @@ quotilybot help - Displays help message
     catch error
     res.reply usernameToBug.slice(1) + " has been bugged with a quote"
 
+  robot.respond /bug (.*)/i, (res) ->
+    usernameToBug = res.match[1]
+    try
+      # this will do a private message if the "data.room" variable is the user id of a person
+      robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + res.random quotes
+    catch error
+    res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+
   robot.respond /display a qoute on this channel every (.*) (minute|minutes)/i, (res) ->
     min = res.match[1]
     pattern = "*/#{min} * * * *"
@@ -249,7 +259,9 @@ quotilybot help - Displays help message
   robot.on "bug-me", (data) ->
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom data.room, get_random_quote("")
+      call = (msg) ->
+        robot.messageRoom data.room, msg
+
     catch error
 
 
