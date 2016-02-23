@@ -57,6 +57,7 @@ module.exports = (robot) ->
   get_random_quote = (callback) ->
     #Get a Postgres client from the connection pool
     quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
+    console.log("get_random_quote")
     pg.connect(connectionString, (err, client, done) ->
         # Handle connection errors
         if err
@@ -70,6 +71,7 @@ module.exports = (robot) ->
         
         query.on('row', (row) ->
             quote = "`" + row[0] + "` - " + row[1]
+            console.log("get_random_quote HERE")
             callback(quote)
         )
 
@@ -182,6 +184,7 @@ quotilybot help - Displays help message
   # note that if you direct message this command to the bot, you don't need to prefix it with the name of the bot
   ###
   robot.respond /bugz/i, (msg) ->
+  	console.log("In Bugz method")
     robot.emit "bug-me", {
       # removing the @ symbol
       room: get_username(msg).slice(1),
@@ -261,7 +264,7 @@ quotilybot help - Displays help message
       # this will do a private message if the "data.room" variable is the user id of a person
       call = (msg) ->
         robot.messageRoom data.room, msg
-
+      get_random_quote(call)
     catch error
 
 
