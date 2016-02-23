@@ -39,8 +39,8 @@ JOB_MAX_COUNT = 10000
 BOT_TZ_DIFF = -1
 STORE_KEY = 'quotily_schedule'
 
-pg = require('pg');
-connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/todo';
+pg = require('pg')
+connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/todo'
 
 module.exports = (robot) ->
   robot.brain.on 'loaded', =>
