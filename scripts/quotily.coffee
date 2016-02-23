@@ -42,11 +42,6 @@ STORE_KEY = 'quotily_schedule'
 pg = require('pg');
 connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/todo';
 
-client = new pg.Client(connectionString);
-client.connect();
-query = client.query('CREATE TABLE items(id SERIAL PRIMARY KEY, text VARCHAR(40) not null, complete BOOLEAN)');
-query.on('end', function() { client.end(); });
-
 module.exports = (robot) ->
   robot.brain.on 'loaded', =>
     syncSchedules robot
@@ -254,7 +249,7 @@ quotilybot help - Displays help message
   robot.on "bug-me", (data) ->
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom data.room, res.random quotes
+      robot.messageRoom data.room, get_random_quote("")
     catch error
 
 
