@@ -443,9 +443,9 @@ class Job
       call = (random_quote) ->
         #res.send "@" + get_username(res).slice(1) + ":" + random_quote
         #res.reply usernameToBug.slice(1) + " has been bugged with a quote"
-        @message = random_quote
-        robot.send envelope, @message
-        robot.adapter.receive new TextMessage(@user, @message) 
+        #message = random_quote
+        robot.send envelope, random_quote
+        robot.adapter.receive new TextMessage(@user, random_quote) 
         @cb?()
       @message(call)
       
