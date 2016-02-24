@@ -13,8 +13,8 @@
 #		quotilybot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 #		quotilybot schedule list - List all scheduled quote messaging
 #		quotilybot give me a quote - Reply with a random quote
-#		quotilybot bug me - Reply with a DM of a random quote 
-#		quotilybot bug <handle> with a quote - Sends a random quote to the <handle>
+#		quotilybot bug-me - Reply with a DM of a random quote 
+#		quotilybot bug <handle>- Sends a random quote to the <handle>
 #		quotilybot display a qoute on this channel every <minute> (minute|minutes) - Sends a random quote every <minute> on the current channel
 #	    quotilybot every <minute> (minute|minutes) - shoutcut for above ^^^
 #		quotilybot display a qoute on this channel every <hour> (hour|hours) - Sends a random quote every <hour> on the current channel
@@ -178,7 +178,7 @@ quotilybot help - Displays help message
   # Secondary example of triggering a custom event
   # note that if you direct message this command to the bot, you don't need to prefix it with the name of the bot
   ###
-  robot.respond /bugz/i, (msg) ->
+  robot.respond /bug-me/i, (msg) ->
     console.log("In Bugz method")
     robot.emit "bug-me", {
       # removing the @ symbol
@@ -208,25 +208,25 @@ quotilybot help - Displays help message
     catch error
     
 
-  robot.respond /display a qoute on this channel every (.*) (minute|minutes)/i, (res) ->
+  robot.respond /display a quote on this channel every (.*) (minute|minutes)/i, (res) ->
     min = res.match[1]
     pattern = "*/#{min} * * * *"
-    schedule robot, res, pattern , ""
+    schedule robot, res, pattern , get_random_quote
   #Shortcut
   robot.respond /every (.*) (minute|minutes)/i, (res) ->
     min = res.match[1]
     pattern = "*/#{min} * * * *"
-    schedule robot, res, pattern , ""
+    schedule robot, res, pattern , get_random_quote
 
-  robot.respond /display a qoute on this channel every (.*) (hour|hours)/i, (res) ->
+  robot.respond /display a quote on this channel every (.*) (hour|hours)/i, (res) ->
     hrs = res.match[1]
     pattern = "* */#{hrs} * * *"
-    schedule robot, res, pattern , ""
+    schedule robot, res, pattern , get_random_quote
   #Shortcut
   robot.respond /every (.*) (hour|hours)/i, (res) ->
     hrs = res.match[1]
     pattern = "* */#{hrs} * * *"
-    schedule robot, res, pattern , ""
+    schedule robot, res, pattern , get_random_quote
   
   robot.respond /every working days at (1[012]|[1-9]):([0-5][0-9])(am|pm)/i, (res) ->
   	hrs = new Number(res.match[1])
@@ -240,7 +240,7 @@ quotilybot help - Displays help message
     else
       hrs += BOT_TZ_DIFF
   	pattern = "#{min} #{hrs} * * 1-5"
-  	schedule robot, res, pattern, ""
+  	schedule robot, res, pattern, get_random_quote
 
   robot.respond /every non-working days at (1[012]|[1-9]):([0-5][0-9])(am|pm)/i, (res) ->
   	hrs = new Number(res.match[1])
@@ -254,7 +254,7 @@ quotilybot help - Displays help message
     else
       hrs += BOT_TZ_DIFF
   	pattern = "#{min} #{hrs} * * 0,6"
-  	schedule robot, res, pattern, ""
+  	schedule robot, res, pattern, get_random_quote
 
   ###
   # A generic custom event listener
@@ -447,7 +447,7 @@ class Job
         robot.send envelope, @message
         robot.adapter.receive new TextMessage(@user, @message) 
         @cb?()
-      get_random_quote(call)
+      @message(call)
       
     )
 
