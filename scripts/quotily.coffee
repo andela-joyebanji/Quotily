@@ -185,15 +185,15 @@ quotilybot help - Displays help message
       room: get_username(msg).slice(1),
       source: 'use of the bug me command'
     }
-  robot.respond /bug (.*) with a quote$/i, (res) ->
-    usernameToBug = res.match[1]
-    try
+  #robot.respond /bug (.*) with a quote$/i, (res) ->
+   # usernameToBug = res.match[1]
+    #try
       # this will do a private message if the "data.room" variable is the user id of a person
-      call = (random_quote) ->
-        res.send "@" + get_username(res).slice(1) + ":" + random_quote
-        res.reply usernameToBug.slice(1) + " has been bugged with a quote"
-      get_random_quote(call)
-    catch error
+     # call = (random_quote) ->
+      #  res.send "@" + get_username(res).slice(1) + ":" + random_quote
+      #  res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+      #get_random_quote(call)
+    #catch error
     
 
   robot.respond /bug (.*)/i, (res) ->
@@ -201,7 +201,7 @@ quotilybot help - Displays help message
     try
       # this will do a private message if the "data.room" variable is the user id of a person
       call = (random_quote) ->
-        robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + res.random quotes
+        robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + random_quote
         res.reply usernameToBug.slice(1) + " has been bugged with a quote"
       get_random_quote(call)
       
