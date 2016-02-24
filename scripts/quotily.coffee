@@ -57,7 +57,6 @@ module.exports = (robot) ->
   get_random_quote = (callback) ->
     #Get a Postgres client from the connection pool
     quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
-    console.log("get_random_quote")
     pg.connect(connectionString, (err, client, done) ->
         # Handle connection errors
         if err
@@ -67,7 +66,7 @@ module.exports = (robot) ->
         query = client.query("select * from quotes order by random() limit 1;")
         query.on('row', (row) ->
             quote = "`" + row.quote + "` - " + row.author
-            console.log(" get_random_quote HERE " + quote + row)
+            #console.log(" get_random_quote HERE " + quote + row)
             callback(quote)
         )
 
@@ -144,7 +143,9 @@ quotilybot help - Displays help message
     cancelSchedule robot, msg, msg.match[1]
 
   robot.respond /give me a quote/i, (msg) ->
-     msg.send "@" + get_username(msg).slice(1) + ":" + msg.random ["`See the light in others and treat them as if that is all you see.` - Wayne Dyer", "`We can do more good by being good, than in any other way.` - Rowland Hill", "`It is our light, not our darkness that most frightens us.` - Marianne Williamson","`Our deepest fear is not that we are inadequate. Our deepest fear is that we are powerful beyond measure.`- Marianne Williamson"]
+    call = (random_quote) ->
+        msg.send "@" + get_username(msg).slice(1) + ":" + random_quote
+    get_random_quote(call)
 
 
   # A script to watch a channel's new members
@@ -188,17 +189,24 @@ quotilybot help - Displays help message
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + res.random quotes
+      call = (random_quote) ->
+        res.send "@" + get_username(res).slice(1) + ":" + random_quote
+        res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+      get_random_quote(call)
     catch error
-    res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+    
 
   robot.respond /bug (.*)/i, (res) ->
     usernameToBug = res.match[1]
     try
       # this will do a private message if the "data.room" variable is the user id of a person
-      robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + res.random quotes
+      call = (random_quote) ->
+        robot.messageRoom usernameToBug.slice(1), get_username(res) + ':' + res.random quotes
+        res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+      get_random_quote(call)
+      
     catch error
-    res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+    
 
   robot.respond /display a qoute on this channel every (.*) (minute|minutes)/i, (res) ->
     min = res.match[1]
@@ -432,10 +440,15 @@ class Job
   start: (robot) ->
     @job = scheduler.scheduleJob(@pattern, =>
       envelope = user: @user, room: @user.room
-      @message = @random(quotes)
-      robot.send envelope, @message
-      robot.adapter.receive new TextMessage(@user, @message) 
-      @cb?()
+      call = (random_quote) ->
+        #res.send "@" + get_username(res).slice(1) + ":" + random_quote
+        #res.reply usernameToBug.slice(1) + " has been bugged with a quote"
+        @message = random_quote
+        robot.send envelope, @message
+        robot.adapter.receive new TextMessage(@user, @message) 
+        @cb?()
+      get_random_quote(call)
+      
     )
 
   cancel: ->
