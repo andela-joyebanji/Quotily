@@ -447,7 +447,7 @@ class Job
         robot.send envelope, random_quote
         robot.adapter.receive new TextMessage(@user, random_quote) 
         @cb?()
-      console.log(message);
+      console.log(message)
       @message(call)
       
     )
