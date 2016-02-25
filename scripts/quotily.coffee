@@ -286,7 +286,6 @@ quotilybot help - Displays help message
     #robot.brain.set('everything_uppity_count', (robot.brain.get('everything_uppity_count') || 0) + 1)
 
 
-
 # helper method to get sender of the message
 get_random_quote = (callback) ->
   #Get a Postgres client from the connection pool
