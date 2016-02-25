@@ -52,30 +52,6 @@ module.exports = (robot) ->
   # helper method to get sender of the message
   get_username = (response) ->
     "@#{response.message.user.name}"
-
-  # helper method to get sender of the message
-  get_random_quote = (callback) ->
-    #Get a Postgres client from the connection pool
-    quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
-    pg.connect(connectionString, (err, client, done) ->
-        # Handle connection errors
-        if err
-            done()
-            quote = err
-             
-        query = client.query("select * from quotes order by random() limit 1;")
-        query.on('row', (row) ->
-            quote = "`" + row.quote + "` - " + row.author
-            #console.log(" get_random_quote HERE " + quote + row)
-            callback(quote)
-        )
-
-        # After all data is returned, close connection and return results
-        query.on('end', () ->
-            done()
-            #return res.json(results)
-        )
-    )
    
 
   # helper method to get channel of originating message
@@ -311,7 +287,31 @@ quotilybot help - Displays help message
 
 
 
+# helper method to get sender of the message
+get_random_quote = (callback) ->
+  #Get a Postgres client from the connection pool
+  quote = "`See the light in others and treat them as if that is all you see.` - Wayne Dyer"
+  pg.connect(connectionString, (err, client, done) ->
+      # Handle connection errors
+      if err
+          done()
+          quote = err
+           
+      query = client.query("select * from quotes order by random() limit 1;")
+      query.on('row', (row) ->
+          quote = "`" + row.quote + "` - " + row.author
+          #console.log(" get_random_quote HERE " + quote + row)
+          callback(quote)
+      )
 
+      # After all data is returned, close connection and return results
+      query.on('end', () ->
+          done()
+          #return res.json(results)
+      )
+  )
+
+  
 #Scheduling Refenrence: https://github.com/matsukaz/hubot-schedule
 schedule = (robot, msg, pattern, message) ->
   if JOB_MAX_COUNT <= Object.keys(JOBS).length
