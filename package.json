@@ -19,7 +19,8 @@
     "hubot-shipit": "^0.2.0",
     "hubot-slack": "^3.4.2",
     "hubot-twitter": "^2.1.1",
-    "node-schedule": "^1.0.0"
+    "node-schedule": "^1.0.0",
+    "pg": "^4.4.6"
   },
   "engines": {
     "node": "0.10.x"
