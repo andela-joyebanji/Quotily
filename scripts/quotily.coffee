@@ -311,7 +311,7 @@ get_random_quote = (callback) ->
       )
   )
 
-  
+
 #Scheduling Refenrence: https://github.com/matsukaz/hubot-schedule
 schedule = (robot, msg, pattern, message) ->
   if JOB_MAX_COUNT <= Object.keys(JOBS).length
@@ -441,14 +441,10 @@ class Job
     @job = scheduler.scheduleJob(@pattern, =>
       envelope = user: @user, room: @user.room
       call = (random_quote) ->
-        #res.send "@" + get_username(res).slice(1) + ":" + random_quote
-        #res.reply usernameToBug.slice(1) + " has been bugged with a quote"
-        #message = random_quote
         robot.send envelope, random_quote
         robot.adapter.receive new TextMessage(@user, random_quote) 
         @cb?()
-      console.log(@message)
-      @message(call)
+      get_random_quote(call)
       
     )
 
